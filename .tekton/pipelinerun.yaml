@@ -5,38 +5,50 @@ metadata:
   annotations:
     pipelinesascode.tekton.dev/on-event: "[pull_request]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
-    pipelinesascode.tekton.dev/task: "[git-clone]"
+    pipelinesascode.tekton.dev/task: "[git-clone, "golang-test", "golang-build"]"
     pipelinesascode.tekton.dev/max-keep-runs: "2"
 spec:
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+  params:
+  - name: repo_url
+    value: "{{repo_url}}"
+  - name: revision
+    value: "{{revision}}"
+  - name: golang-version
+    value: "1.17.7"
   pipelineSpec:
+    params:
+    - name: repo_url
+    - name: revision
+    - name: golang-version
     tasks:
-      - name: task-1
-        taskSpec:
-          steps:
-            - name: echo-from-bash-0
-              image: bash:latest
-              command: ["/usr/local/bin/bash"]
-              args: ["-c", "echo from bash, step 0 | tee /tekton/results/step-0"]
-            - name: echo-from-bash-1
-              image: bash:latest
-              command: ["/usr/local/bin/bash"]
-              args: ["-c", "echo from bash, step 1 | tee /tekton/results/step-1; sleep 5"]
-            - name: list-results
-              image: bash:latest
-              command: ["/usr/local/bin/bash"]
-              args: ["-c", "ls -l /tekton/results/"]
-      - name: task-2
-        runAfter: [task-1]
-        taskSpec:
-          steps:
-            - name: echo-from-fedora
-              image: ubuntu:latest
-              command: ["/bin/bash"]
-              args: ["-c", "echo from ubuntu, step 0 | tee /tekton/results/step-0"]
-      - name: task-3
-        taskSpec:
-          steps:
-            - name: echo-from-fedora
-              image: fedora:latest
-              command: ["/bin/sh"]
-              args: ["-c", "echo from fedora, step 0 | tee /tekton/results/step-0; sleep 10"]
+    - name: git-clone
+      params:
+      - name: url
+        value: $(params.repo_url)
+      - name: revision
+        value: $(params.revision)
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: source
+    - name: test
+      params:
+      - name: version
+        value: $(params.golang-version)
+      - name: packages
+        value: "./..."
+      taskRef:
+        name: golang-test
+      workspaces:
+      - name: source
+        workspace: source
