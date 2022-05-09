@@ -47,6 +47,8 @@ spec:
       params:
       - name: version
         value: $(params.golang-version)
+      - name: package
+        value: github.com/adambkaplan/devsecops-shipwright-tekton
       - name: packages
         value: "./..."
       taskRef:
