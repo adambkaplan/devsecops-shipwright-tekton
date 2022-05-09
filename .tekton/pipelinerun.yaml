@@ -25,6 +25,8 @@ spec:
   - name: golang-version
     value: "1.17.7"
   pipelineSpec:
+    workspaces:
+    - name: source
     params:
     - name: repo_url
     - name: revision
