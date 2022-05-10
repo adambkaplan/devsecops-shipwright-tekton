@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-with-shipwright
+  annotations:
+    pipelinesascode.tekton.dev/on-event: "[pull_request]"
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
+    pipelinesascode.tekton.dev/task: "[git-clone, golang-test, golang-build]"
+    pipelinesascode.tekton.dev/max-keep-runs: "2"
+spec:
+  pipelineSpec:
+    tasks:
+    - name: before
+      taskSpec:
+        steps:
+          - image: busybox
+            script: echo "before buildrun"
+    - name: shipwright
+      taskRef:
+        apiVersion: shipwright.io/v1alpha1
+        kind: Build
+        name: nodejs-ex
+      runAfter:
+        - before
+    - name: after
+      taskSpec:
+        steps:
+          - image: busybox
+            script: echo "after buildrun"
+      runAfter:
+        - shipwright
