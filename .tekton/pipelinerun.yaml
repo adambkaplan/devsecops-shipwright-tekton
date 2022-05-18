@@ -24,6 +24,12 @@ spec:
     value: "{{revision}}"
   - name: golang-version
     value: "1.17.7"
+  - name: pac-namespace
+    value: cdcon-demo-ci
+  - name: source_branch
+    value: "{{source_branch}}"
+  - name: pull_request_number
+    value: "{{pull_request_number}}"
   pipelineSpec:
     workspaces:
     - name: source
@@ -31,6 +37,9 @@ spec:
     - name: repo_url
     - name: revision
     - name: golang-version
+    - name: pac-namespace
+    - name: source_branch
+    - name: pull_request_number
     tasks:
     - name: git-clone
       params:
@@ -57,3 +66,24 @@ spec:
       workspaces:
       - name: source
         workspace: source
+    - name: build
+      runAfter: [git-clone]
+      params:
+      - name: shp-source-url
+        value: $(params.repo_url)
+      - name: shp-source-revision
+        value: $(params.revision)
+      - name: shp-output-image
+        value: image-registry.openshift-image-registry.svc:5000/$(params.pac-namespace)/devsecops-shipwright-tekton:$(params.source_branch)-$(params.pull_request_number)
+      taskSpec:
+        apiVersion: shipwright.io/v1alpha1
+        kind: Build
+        spec:
+          source:
+            url: $(params.shp-source-url)
+            revision: $(params.shp-source-revision)
+          strategy:
+            name: ko
+            kind: BuildStrategy
+          output:
+            image: $(params.shp-output-image)
