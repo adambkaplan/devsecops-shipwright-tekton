@@ -2,12 +2,12 @@ apiVersion: shipwright.io/v1alpha1
 kind: Build
 metadata:
   name: devsecops-shipwright-tekton
-  namespace: devsecops-demo
+  namespace: cdcon-demo-ci
 spec:
   source:
     url: https://github.com/adambkaplan/devsecops-shipwright-tekton
   strategy:
     name: ko
-    kind: BuildStrategy
+    kind: ClusterBuildStrategy
   output:
-    image: image-registry.openshift-image-registry.svc:5000/devsecops-demo/devsecops-shipwright-tekton:latest
+    image: image-registry.openshift-image-registry.svc:5000/cdcon-demo-ci/devsecops-shipwright-tekton:latest

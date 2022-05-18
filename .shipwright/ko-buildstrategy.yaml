@@ -1,8 +1,7 @@
 apiVersion: shipwright.io/v1alpha1
-kind: BuildStrategy
+kind: ClusterBuildStrategy
 metadata:
   name: ko
-  namespace: devsecops-demo
 spec:
   parameters:
   - name: go-flags

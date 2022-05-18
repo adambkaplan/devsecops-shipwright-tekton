@@ -9,7 +9,7 @@ DevSecOps with Shipwright and Tekton
 3. Create the `devsecops-demo` project in your cluster
 
    ```sh
-   $ oc new-project devsecops-demo
+   $ oc new-project cdcon-demo-ci
    ```
 
 4. Install the `shp` command line.
