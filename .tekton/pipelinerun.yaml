@@ -58,14 +58,23 @@ spec:
       - name: source
         workspace: source
     - name: build
+      runAfter: [git-clone]
+      params:
+      - name: shp-source-url
+        value: $(params.repo_url)
+      - name: shp-source-revision
+        value: $(params.revision)
+      - name: shp-output-image
+        value: image-registry.openshift-image-registry.svc:5000/devsecops-demo/devsecops-shipwright-tekton:latest
       taskSpec:
         apiVersion: shipwright.io/v1alpha1
         kind: Build
         spec:
           source:
-            url: https://github.com/adambkaplan/devsecops-shipwright-tekton
+            url: $(params.shp-source-url)
+            revision: $(params.shp-source-revision)
           strategy:
             name: ko
             kind: BuildStrategy
           output:
-            image: image-registry.openshift-image-registry.svc:5000/devsecops-demo/devsecops-shipwright-tekton:latest
+            image: $(params.shp-output-image)
