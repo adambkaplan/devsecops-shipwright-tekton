@@ -84,6 +84,6 @@ spec:
             revision: $(params.shp-source-revision)
           strategy:
             name: ko
-            kind: BuildStrategy
+            kind: ClusterBuildStrategy
           output:
             image: $(params.shp-output-image)
