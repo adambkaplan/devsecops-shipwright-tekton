@@ -74,7 +74,7 @@ spec:
       - name: shp-source-revision
         value: $(params.revision)
       - name: shp-output-image
-        value: image-registry.openshift-image-registry.svc:5000/$(params.pac-namespace)/devsecops-shipwright-tekton:latest
+        value: ghcr.io/{{repo_owner}}/{{repo_name}}:latest
       taskSpec:
         apiVersion: shipwright.io/v1alpha1
         kind: Build
@@ -87,3 +87,5 @@ spec:
             kind: ClusterBuildStrategy
           output:
             image: $(params.shp-output-image)
+            credentials:
+              name: github-token
