@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// cobra root command
 var rootCmd = &cobra.Command{
 	Use:   "hello",
 	Short: "A simple \"Hello world!\" command line application.",
