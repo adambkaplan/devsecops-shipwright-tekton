@@ -1,0 +1,89 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: simple-pipeline-pull-request
+  annotations:
+    pipelinesascode.tekton.dev/on-event: "[pull_request]"
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
+    pipelinesascode.tekton.dev/task: "[git-clone, golang-test, golang-build]"
+    pipelinesascode.tekton.dev/max-keep-runs: "2"
+spec:
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
+  params:
+  - name: repo_url
+    value: "{{repo_url}}"
+  - name: revision
+    value: "{{revision}}"
+  - name: golang-version
+    value: "1.17.7"
+  - name: pac-namespace
+    value: cdcon-demo-ci
+  - name: source_branch
+    value: "{{source_branch}}"
+  - name: pull_request_number
+    value: "{{pull_request_number}}"
+  pipelineSpec:
+    workspaces:
+    - name: source
+    params:
+    - name: repo_url
+    - name: revision
+    - name: golang-version
+    - name: pac-namespace
+    - name: source_branch
+    - name: pull_request_number
+    tasks:
+    - name: git-clone
+      params:
+      - name: url
+        value: $(params.repo_url)
+      - name: revision
+        value: $(params.revision)
+      taskRef:
+        name: git-clone
+      workspaces:
+      - name: output
+        workspace: source
+    - name: test
+      runAfter: [git-clone]
+      params:
+      - name: version
+        value: $(params.golang-version)
+      - name: package
+        value: github.com/adambkaplan/devsecops-shipwright-tekton
+      - name: packages
+        value: "./..."
+      taskRef:
+        name: golang-test
+      workspaces:
+      - name: source
+        workspace: source
+    - name: build
+      runAfter: [git-clone]
+      params:
+      - name: shp-source-url
+        value: $(params.repo_url)
+      - name: shp-source-revision
+        value: $(params.revision)
+      - name: shp-output-image
+        value: image-registry.openshift-image-registry.svc:5000/$(params.pac-namespace)/devsecops-shipwright-tekton:$(params.source_branch)-$(params.pull_request_number)
+      taskSpec:
+        apiVersion: shipwright.io/v1alpha1
+        kind: Build
+        spec:
+          source:
+            url: $(params.shp-source-url)
+            revision: $(params.shp-source-revision)
+          strategy:
+            name: ko
+            kind: ClusterBuildStrategy
+          output:
+            image: $(params.shp-output-image)
