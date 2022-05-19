@@ -23,17 +23,7 @@ DevSecOps with Shipwright and Tekton
    ```
 ### Inner loop development
 
-1. Create the Shipwright build strategy and build
-
-   ```sh
-   $ oc apply -f .shipwright/
-   ```
-
-2. Use the Shipwright command line to build the container image from local source code:
-
-  ```sh
-  $ shp buildrun upload devsecops-shipwright-tekton
-  ```
-
-This will upload the local source code, build a container image, as well as a software bill of materials (SBOM).
-Both the image and SBOM are pushed to the OpenShift internal registry.
+Run the script at `hack/demo-inner-loop.sh` to see how Shipwright can build from local source,
+producing an SBOM for your container image.
+If you are not using CodeReadyContainers, use the environment variable `OPENSHIFT_REGISTRY_HOST` to
+provide the public route to the OpenShift container registry.
