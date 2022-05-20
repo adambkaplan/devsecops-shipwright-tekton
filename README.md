@@ -21,6 +21,7 @@ DevSecOps with Shipwright and Tekton
    $ git clone https://github.com/adambkaplan/devsecops-shipwright-tekton.git
    $ cd devsecops-shipwright-tekton
    ```
+
 ### Inner loop development
 
 Run the script at `hack/demo-inner-loop.sh` to see how Shipwright can build from local source,
