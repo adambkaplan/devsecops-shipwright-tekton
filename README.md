@@ -1,4 +1,4 @@
-# devsecops-shipwright-tekton
+# devsecops-shipwright-tekton 😺
 
 DevSecOps with Shipwright and Tekton
 
