@@ -70,9 +70,11 @@ spec:
       popd > /dev/null
 
       # Store the image digest
-      grep digest /tmp/layout/index.json | sed -E 's/.*sha256([^"]*).*/sha256\1/' | tr -d '\n' > '$(results.shp-image-digest.path)'
+      grep digest /tmp/layout/index.json | sed -E 's/.*sha256([^"]*).*/sha256\1/' | tr -d '\n' > '$(results.SHP_IMAGE_DIGEST.path)'
       # Store the image size
-      du -b -c /tmp/layout/blobs/sha256/* | tail -1 | sed 's/\s*total//' | tr -d '\n' > '$(results.shp-image-size.path)'
+      du -b -c /tmp/layout/blobs/sha256/* | tail -1 | sed 's/\s*total//' | tr -d '\n' > '$(results.SHP_IMAGE_SIZE.path)'
+      # Store the image URL
+      echo "${PARAM_OUTPUT_IMAGE}" > '$(results.SHP_IMAGE_URL.path)'
     resources:
       limits:
         cpu: 500m
