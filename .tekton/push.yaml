@@ -88,4 +88,4 @@ spec:
           output:
             image: $(params.shp-output-image)
             credentials:
-              name: github-token
+              name: docker-auth
