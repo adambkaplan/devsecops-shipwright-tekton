@@ -9,6 +9,8 @@ OPENSHIFT_REGISTRY_HOST=${OPENSHIFT_REGISTRY_HOST:-default-route-openshift-image
 kubectl apply -f .shipwright/ko-buildstrategy.yaml
 oc new-project cdcon-demo-ci
 rm -rf _output
+oc delete buildruns --all
+oc delete imagestreams --all
 mkdir -p _output
 oc registry login
 
@@ -42,7 +44,7 @@ wait
 clear
 
 p "Two images are produced - the image and its SBOM."
-pe "kubectl get imagestream devsecops-shipwright-tekton -o yaml"
+pe "kubectl get imagestream -o yaml"
 
 wait
 clear
@@ -79,6 +81,6 @@ p "Now we are ready to submit a pull request with our code changes."
 
 #### Teardown ####
 clear
-oc delete imagestream devsecops-shipwright-tekton
-oc delete project cdcon-demo-ci
+oc delete imagestreams --all
+oc delete buildruns --all
 clear
